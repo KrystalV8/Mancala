@@ -10,17 +10,39 @@
     <h1 class="Title">Our Mancala Gameo</h1>
 </p> Enjoy our game! </p>
 <p role="image" aria-label="happy sun">🌞</p>
+<button onclick="alerto()">Hello! Click Me!</button>
+
+<script>
+
+function alerto(){
+    alert("Are you ready to play?????");
+}
 
 
 
 
 
+function createBtn(btnText, choice) {
+    // create a button
+    let button = document.createElement
+    ("button");
+
+    // Get the text
+    button.innerHTML = btnText
+
+    // append to HTML(?)
+    btnContain.appendChild(button);
+
+    // Outputs the choice you have made after clicking the button
+    button.addEventListener ("click", function () {
+        alert("result " + choice);
+    });
+}
 
 
 
 
-
-
+</script>
 
 </body>
 </html>
