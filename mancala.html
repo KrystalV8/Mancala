@@ -22,10 +22,11 @@ var boardeo[16];
 var pits_per_board = 16;
 var boardeo[pits_per_board];
 var numEmojisInCell = board[4];
+board[11] = 12;
 
-var STARTING_TOKEN_COUNT = 4; 	// 3 tokens per bin at game start
+var STARTING_TOKEN_COUNT = 4;
 
-var setUpBoardeo = function() {
+ function setUpBoardeo() {
 	for (var i=0; i<pits_per_board; ++i) {
 		if (i == PLAYER_SCORE_BIN || i == COMPUTER_SCORE_BIN) {
 			boardeo[i] = 0;
