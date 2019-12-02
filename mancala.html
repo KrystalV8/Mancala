@@ -7,36 +7,50 @@
     <title>Mancala</title>
 </head>
 <body>
-    <h1 class="Title">Our Mancala Gameo</h1>
-</p> Enjoy our game! </p>
-<p role="image" aria-label="happy sun">🌞</p>
-<script>
-    var GAME_BOARD;
-    var ACROSS = {
-        '1': 7,
-        '2': 6,
-        '3': 5,
-        '4': 4,
-        '5': 3,
-        '6': 2,
-        '7': 1,
-    };
-
- 
-
-
-
+    <script>
+    
+var GAME_BOARD;
+var ACROSS = {
+    '1': 13,
+    '2': 12,
+    '3': 11,
+    '4': 10,
+    '5': 9,
+    '6': 8,
+    '8': 6,
+    '9': 5,
+    '10': 4,
+    '11': 3,
+    '12': 2,
+    '13': 1
+};
 
 
+function drawBoard()
+{
+    for (var i = 0; i < GAME_BOARD.length; i++)
+    {
+        $('.pos' + i).html('');
+        var rocks = '';
+
+        for (var j = 0; j < GAME_BOARD[i]; j++)
+        {
+            rocks += '<div class="rock"></div>';
+        }
+
+        $('.pos' + i).append(rocks);
+    }
+}
 
 
 
-
-
-
-
-
-
-</script>
+    
+    
+    
+    
+    
+    
+    
+    </script>
 </body>
 </html>
