@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mancala</title>
-
+ 
 </head>
 <body>
     <h1 class="Title">Mancala </h1>
@@ -13,263 +13,441 @@
   <p role="image" aria-label="happy sun">🌞</p>
   
   <style> 
-  #header {
-	grid-row: 1/2;
-	grid-column: 1/-1;
-	justify-self: center;
-	font-size: 25px;
+  
+*, *::before, *::after {
+	box-sizing: inherit;
+}
+
+html {
+	font-size: 20px;
+	box-sizing: border-box;
+}
+
+body {
+	text-align: center;
+	color: #555;
+	background: radial-gradient(circle, #fff 15%, #ccc);
+	background-size: cover;
+	font-size: 1rem;
+	font-family: Roboto Slab, sans-serif;
+	margin-top: 1em;
+}
+
+h1 {
+	font-family: Fontdiner Swanky, sans-serif;
+	font-size: 2rem;
+	letter-spacing: 4px;
+	margin: 0;
 }
 
 .board {
-	display: grid;
-	grid-template-rows: 3;
-	grid-template-columns: repeat(3, 200px);
-	grid-gap: 20px;
-	justify-content: center;
+	margin: 30px auto;
+	display: flex;
+	flex-flow: row;
+	border: 1px solid #bbb;
+	box-shadow: 0 0 5px #bbb;
+	width: 930px;
+	height: 235px;
+	max-width: 100%;
+	resize: both;
+	overflow-x: auto;
+	background: url(../images/wood.png);
+	border-radius: 20px;
+
+	&, p {
+		transform: rotate(0deg);
+		transition: transform 3s ease 0s;
+	}
+
+	[data-player="two"] &,
+	[data-player="two"] & p {
+		transform: rotate(180deg);
+	}
 }
 
-.goal {
-	grid-row: 2/4;
-	&__one {
-		grid-column: -2/-1;
-		grid-row: 2/4;
-	}
-	&__two {
-		grid-column: 1/2;
-		grid-row: 2/4;
+.rows {
+	flex: 7;
+	display: flex;
+	flex-direction: column;
+}
+
+.store {
+	flex: 1;
+	border-radius: 40px;
+}
+
+.row {
+	flex: 1;
+	display: flex;
+
+	&.player-two {
+		flex-direction: row-reverse;
 	}
 }
-.playerOneRow {
-	grid-row: 3/4;
-	grid-column: 2/-2;
-	grid-template-columns: repeat(6, 1fr);
+
+.store, .pit {
+	margin: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0,0,0,.15);
+	box-shadow: inset 0 0 2px rgba(0,0,0,.5);
+	cursor: default;
+
+	p {
+		cursor: inherit;
+	}
+
+	p::selection {
+		background: transparent;
+	}
 }
-.playerTwoRow {
-	grid-row: 2/3;
-	grid-column: 2/-2;
-	grid-template-columns: repeat(6, 1fr);
+
+.pit {
+	flex: 1;
+	border-radius: 40%;
+}
+
+[data-player="two"] .row.player-two .pit,
+[data-player="one"] .row.player-one .pit {
+	cursor: pointer;
+}
+
+[data-player="two"] .status,
+.store.player-two, .player-two .pit {
+	color: green;
+}
+
+[data-player="one"] .status,
+.store.player-one, .player-one .pit {
+	color: #0074D9;
 }
 
 button {
-		font-size: 25px;
+	cursor: pointer;
+	padding: 7px 13px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	color: #555;
+	background: #f7f7f7;
+	box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba( 0, 0, 0, 0.08 );
+
+	&:hover {
+		background: #fafafa;
+		color: #23282d;
+	}
 }
   </style>
-
+ 
 <script>
 const playerOneRow = [
-	{ name: "goalTwo", marbles: 0 },
-	{ name: "spotZero", marbles: 4 },
-	{ name: "spotOne", marbles: 4 },
-	{ name: "spotTwo", marbles: 4 },
-	{ name: "spotThree", marbles: 4 },
-	{ name: "spotFour", marbles: 4 },
-	{ name: "spotFive", marbles: 4 }
+  { name: "goalTwo", marbles: 0 },
+  { name: "spotZero", marbles: 4 },
+  { name: "spotOne", marbles: 4 },
+  { name: "spotTwo", marbles: 4 },
+  { name: "spotThree", marbles: 4 },
+  { name: "spotFour", marbles: 4 },
+  { name: "spotFive", marbles: 4 }
 ];
-
+ 
 const playerTwoRow = [
-	{ name: "goalTwo", marbles: 0 },
-	{ name: "spotZero", marbles: 4 },
-	{ name: "spotOne", marbles: 4 },
-	{ name: "spotTwo", marbles: 4 },
-	{ name: "spotThree", marbles: 4 },
-	{ name: "spotFour", marbles: 4 },
-	{ name: "spotFive", marbles: 4 }
+  { name: "goalTwo", marbles: 0 },
+  { name: "spotZero", marbles: 4 },
+  { name: "spotOne", marbles: 4 },
+  { name: "spotTwo", marbles: 4 },
+  { name: "spotThree", marbles: 4 },
+  { name: "spotFour", marbles: 4 },
+  { name: "spotFive", marbles: 4 }
 ];
-
+ 
 // const playerOneRow = [
-// 	{ name: "goalTwo", marbles: 0 },
-// 	{ name: "spotZero", marbles: 5 },
-// 	{ name: "spotOne", marbles: 0 },
-// 	{ name: "spotTwo", marbles: 0 },
-// 	{ name: "spotThree", marbles: 0 },
-// 	{ name: "spotFour", marbles: 0 },
-// 	{ name: "spotFive", marbles: 0 }
+//  { name: "goalTwo", marbles: 0 },
+//  { name: "spotZero", marbles: 5 },
+//  { name: "spotOne", marbles: 0 },
+//  { name: "spotTwo", marbles: 0 },
+//  { name: "spotThree", marbles: 0 },
+//  { name: "spotFour", marbles: 0 },
+//  { name: "spotFive", marbles: 0 }
 // ]; // ALL 0 TEST
-
+ 
 var playerOne = true;
 var playerTwo = false;
-
+ 
 turnSwitch = () => {
-	playerOne = !playerOne;
-	playerTwo = !playerTwo;
+  playerOne = !playerOne;
+  playerTwo = !playerTwo;
 }
 updateHeader = () => {
-	let player;
-	switch(playerOne) {
-	case true:
-		player = "Player 1";
-		break;
-	case false:
-		player = "Player 2";
-		break;
-	}
-	document.getElementById("header").innerHTML = `It is ${player}'s turn`
+  let player;
+  switch(playerOne) {
+  case true:
+    player = "Player 1";
+    break;
+  case false:
+    player = "Player 2";
+    break;
+  }
+  document.getElementById("header").innerHTML = `It is ${player}'s turn`
 }
 playerMove = (player, spot) => {
-	let playerCheck = player;
-	if((playerCheck === "p1" && playerOne) || (playerCheck === "p2" && playerTwo) ) {
-		if (playerOne) {
-			playerRow = playerOneRow;
-		} else {
-			playerRow = playerTwoRow;
-		}
-		if (playerRow[spot].marbles !== 0) {
-			s = 1;
-			sExtend = 0;
-			superExtend = 1;
-			ultraExtend = 0;
-			reflow = 0;
-			for (i = 0; i < playerRow[spot].marbles; i++) {
-				// setInterval(() => {
-				if (s <= 7 - (spot + 1)) {
-					playerRow[spot + s].marbles++;
-				} else if (s > 7 - (spot + 1) && s <= 7 - (spot + 1) + 7) {
-					if (playerOne) {
-						playerTwoRow[sExtend].marbles++;
-						sExtend++;
-					} else if (playerTwo) {
-						playerOneRow[sExtend].marbles++;
-						sExtend++;
-					}
-				} else if (s > 7 - (spot + 1) + 7 && s < 7 - (spot + 1) + 14) {
-					if (playerOne) {
-						playerOneRow[superExtend].marbles++;
-						superExtend++;
-						reflow = 1;
-					} else if (playerTwo) {
-						playerTwoRow[superExtend].marbles++;
-						superExtend++;
-						reflow = 1;
-					}
-				} else if (s > 7 - (spot + 1) + 14 && s <= 7 - (spot + 1) + 21) {
-					if (playerOne) {
-						playerTwoRow[ultraExtend].marbles++;
-						ultraExtend++;
-					} else if (playerTwo) {
-						playerOneRow[ultraExtend].marbles++;
-						ultraExtend++;
-					}
-				} else {
-					console.log("too many .(-.-).");
-				}
-				s++;
-		// }, );
-			}
-			playerRow[spot].marbles = reflow;
-			endCheck();
-			turnSwitch();
-			updateDisplay();
-		} else {
-			console.log("Pick a spot with marbles");
-		}
-	} else {
-		/*make players choose again*/
-		console.log("NOT YOUR TURN CHEATER!");
-	}
+  let playerCheck = player;
+  if((playerCheck === "p1" && playerOne) || (playerCheck === "p2" && playerTwo) ) {
+    if (playerOne) {
+      playerRow = playerOneRow;
+    } else {
+      playerRow = playerTwoRow;
+    }
+    if (playerRow[spot].marbles !== 0) {
+      s = 1;
+      sExtend = 0;
+      superExtend = 1;
+      ultraExtend = 0;
+      reflow = 0;
+      for (i = 0; i < playerRow[spot].marbles; i++) {
+        // setInterval(() => {
+        if (s <= 7 - (spot + 1)) {
+          playerRow[spot + s].marbles++;
+        } else if (s > 7 - (spot + 1) && s <= 7 - (spot + 1) + 7) {
+          if (playerOne) {
+            playerTwoRow[sExtend].marbles++;
+            sExtend++;
+          } else if (playerTwo) {
+            playerOneRow[sExtend].marbles++;
+            sExtend++;
+          }
+        } else if (s > 7 - (spot + 1) + 7 && s < 7 - (spot + 1) + 14) {
+          if (playerOne) {
+            playerOneRow[superExtend].marbles++;
+            superExtend++;
+            reflow = 1;
+          } else if (playerTwo) {
+            playerTwoRow[superExtend].marbles++;
+            superExtend++;
+            reflow = 1;
+          }
+        } else if (s > 7 - (spot + 1) + 14 && s <= 7 - (spot + 1) + 21) {
+          if (playerOne) {
+            playerTwoRow[ultraExtend].marbles++;
+            ultraExtend++;
+          } else if (playerTwo) {
+            playerOneRow[ultraExtend].marbles++;
+            ultraExtend++;
+          }
+        } else {
+          console.log("too many .(-.-).");
+        }
+        s++;
+    // }, );
+      }
+      playerRow[spot].marbles = reflow;
+      endCheck();
+      turnSwitch();
+      updateDisplay();
+    } else {
+      console.log("Pick a spot with marbles");
+    }
+  } else {
+    /*make players choose again*/
+    console.log("NOT YOUR TURN CHEATER!");
+  }
 };
-
+ 
 updateDisplay = () => {
-	updateHeader();
-	document.getElementById("p2goal").innerHTML = playerOneRow[0].marbles;
-	document.getElementById("p1spot1").innerHTML = playerOneRow[1].marbles;
-	document.getElementById("p1spot2").innerHTML = playerOneRow[2].marbles;
-	document.getElementById("p1spot3").innerHTML = playerOneRow[3].marbles;
-	document.getElementById("p1spot4").innerHTML = playerOneRow[4].marbles;
-	document.getElementById("p1spot5").innerHTML = playerOneRow[5].marbles;
-	document.getElementById("p1spot6").innerHTML = playerOneRow[6].marbles;
-	document.getElementById("p1goal").innerHTML = playerTwoRow[0].marbles;
-	document.getElementById("p2spot1").innerHTML = playerTwoRow[1].marbles;
-	document.getElementById("p2spot2").innerHTML = playerTwoRow[2].marbles;
-	document.getElementById("p2spot3").innerHTML = playerTwoRow[3].marbles;
-	document.getElementById("p2spot4").innerHTML = playerTwoRow[4].marbles;
-	document.getElementById("p2spot5").innerHTML = playerTwoRow[5].marbles;
-	document.getElementById("p2spot6").innerHTML = playerTwoRow[6].marbles;
+  updateHeader();
+  document.getElementById("p2goal").innerHTML = playerOneRow[0].marbles;
+  document.getElementById("p1spot1").innerHTML = playerOneRow[1].marbles;
+  document.getElementById("p1spot2").innerHTML = playerOneRow[2].marbles;
+  document.getElementById("p1spot3").innerHTML = playerOneRow[3].marbles;
+  document.getElementById("p1spot4").innerHTML = playerOneRow[4].marbles;
+  document.getElementById("p1spot5").innerHTML = playerOneRow[5].marbles;
+  document.getElementById("p1spot6").innerHTML = playerOneRow[6].marbles;
+  document.getElementById("p1goal").innerHTML = playerTwoRow[0].marbles;
+  document.getElementById("p2spot1").innerHTML = playerTwoRow[1].marbles;
+  document.getElementById("p2spot2").innerHTML = playerTwoRow[2].marbles;
+  document.getElementById("p2spot3").innerHTML = playerTwoRow[3].marbles;
+  document.getElementById("p2spot4").innerHTML = playerTwoRow[4].marbles;
+  document.getElementById("p2spot5").innerHTML = playerTwoRow[5].marbles;
+  document.getElementById("p2spot6").innerHTML = playerTwoRow[6].marbles;
 };
-
+ 
 endCheck = () => {
-	let one = playerOneRow;
-	let two = playerTwoRow;
-	let marbles1 = one.map(a => a.marbles).splice(1);
-	let marbles2 = two.map(a => a.marbles).splice(1);
-	let empty = [0, 0, 0, 0, 0, 0]
-	if (arrayCompare(marbles1, empty)) {
-		sweepRow(one, marbles2);
-		updateDisplay();
-	} else if (arrayCompare(marbles2, empty)) {
-		sweepRow(two, marbles1);
-		updateDisplay();
-	}
+  let one = playerOneRow;
+  let two = playerTwoRow;
+  let marbles1 = one.map(a => a.marbles).splice(1);
+  let marbles2 = two.map(a => a.marbles).splice(1);
+  let empty = [0, 0, 0, 0, 0, 0]
+  if (arrayCompare(marbles1, empty)) {
+    sweepRow(one, marbles2);
+    updateDisplay();
+  } else if (arrayCompare(marbles2, empty)) {
+    sweepRow(two, marbles1);
+    updateDisplay();
+  }
 }
-
+ 
 arrayCompare = (array1, array2) => {
-	let arr1 = array1.join()
-	let arr2 = array2.join()
-	return(arr1 === arr2)
-	console.log(arr1, arr2)
+  let arr1 = array1.join()
+  let arr2 = array2.join()
+  return(arr1 === arr2)
+  console.log(arr1, arr2)
 }
-
+ 
 sweepRow = (playerRow, arrayToSweep) => {
-	if(playerRow == playerOneRow) {
-		playerOtherRow = playerTwoRow;
-	} else {
-		playerOtherRow = playerOneRow;
-	}
-	let total1 = arrayToSweep.reduce((total, num) => {return total+num})
-	let total2 = playerOtherRow[0].marbles
-	playerOtherRow.forEach(item => item.marbles = 0);
-	playerRow[0].marbles = total1;
-	playerOtherRow[0].marbles = total2;
-	updateDisplay();
-	gameEnd();
+  if(playerRow == playerOneRow) {
+    playerOtherRow = playerTwoRow;
+  } else {
+    playerOtherRow = playerOneRow;
+  }
+  let total1 = arrayToSweep.reduce((total, num) => {return total+num})
+  let total2 = playerOtherRow[0].marbles
+  playerOtherRow.forEach(item => item.marbles = 0);
+  playerRow[0].marbles = total1;
+  playerOtherRow[0].marbles = total2;
+  updateDisplay();
+  gameEnd();
 }
-
+ 
 gameEnd = () => {
-	let goalOne = playerTwoRow[0].marbles
-	let goalTwo = playerOneRow[0].marbles
-	if(goalOne > goalTwo) {
-		console.log("Player 1 wins!!!")
-	} else if(goalTwo > goalOne) {
-		console.log("Player 2 wins!!!")
-	} else {
-		console.log("IT'S A TIE!!!")
-	}
+  let goalOne = playerTwoRow[0].marbles
+  let goalTwo = playerOneRow[0].marbles
+  if(goalOne > goalTwo) {
+    console.log("Player 1 wins!!!")
+  } else if(goalTwo > goalOne) {
+    console.log("Player 2 wins!!!")
+  } else {
+    console.log("IT'S A TIE!!!")
+  }
 }
-
+ 
 getNewTotal = (total, num) => {
-	return total+num;
+  return total+num;
 }
-
+ 
 updateDisplay();
 
+module.exports = function(grunt) {
+    'use strict';
+
+    require('load-grunt-tasks')(grunt);
+
+    grunt.initConfig({
+
+        watch: {
+
+            css: {
+                files: ['css/**/*.css'],
+                tasks: ['css']
+            },
+
+            js: {
+                files: ['js/**/*.js'],
+                tasks: ['js']
+            },
+
+            livereload: {
+                files: ['index.html', 'dist/app.css', 'dist/app.js'],
+                options: {
+                    livereload: true
+                }
+            }
+        },
+
+        jshint: {
+            options: {
+                smarttabs: true,
+                eqeqeq: true,
+                newcap: true,
+                eqnull: true
+            },
+            gruntfile: {
+                options: {
+                    globals: {
+                        module: true
+                    }
+                },
+                files: {
+                    src: ['Gruntfile.js']
+                }
+            },
+            src: {
+                files: {
+                    src: ['js/**/*.js']
+                }
+            }
+        },
+
+        postcss: {
+            options: {
+                map: true,
+                processors: [
+                    require('autoprefixer-core')(),
+                    require('precss')(),
+                    require('cssnano')()
+                ]
+            },
+            dist: {
+                src: 'css/app.css',
+                dest: 'dist/app.css'
+            }
+        },
+
+        uglify: {
+            dist: {
+                options: {
+                    sourceMap: true
+                },
+                files: {
+                    'dist/app.js': [
+                        'js/mancala/mancala.js',
+                        'js/mancala/move-stones.js',
+                        'js/mancala/check-winner.js',
+
+                        'js/game/game.js',
+                        'js/game/draw-stones.js',
+                        'js/game/save-manager.js',
+
+                        'js/app.js'
+                    ]
+                }
+            }
+        }
+    });
+
+    grunt.registerTask( 'css', ['postcss'] );
+    grunt.registerTask( 'js', ['jshint', 'uglify'] );
+    grunt.registerTask( 'default', ['css', 'js'] );
+};
+ 
 </script>
+ 
+ <div class="board">
+  <div class="player-two store"><p></p></div>
 
-<div class="board">
-<div id="header"></div>
-	<button id="p2goal" class="goal__two"></button>
-	<div class="playerOneSpot">
-		<button id="p1spot1" onClick="playerMove('p1', 1)"></button>
-		<button id="p1spot2" onClick="playerMove('p1', 2)"></button>
-		<button id="p1spot3" onClick="playerMove('p1', 3)"></button>
-		<button id="p1spot4" onClick="playerMove('p1', 4)"></button>
-		<button id="p1spot5" onClick="playerMove('p1', 5)"></button>
-		<button id="p1spot6" onClick="playerMove('p1', 6)"></button>
-	</div>
-	<div class="playerTwoRow">
-		<button id="p2spot6" onClick="playerMove('p2', 6)"></button>
-		<button id="p2spot5" onClick="playerMove('p2', 5)"></button>
-		<button id="p2spot4" onClick="playerMove('p2', 4)"></button>
-		<button id="p2spot3" onClick="playerMove('p2', 3)"></button>
-		<button id="p2spot2" onClick="playerMove('p2', 2)"></button>
-		<button id="p2spot1" onClick="playerMove('p2', 1)"></button>
-	</div>
+  <div class="rows">
+    <div class="row player-two">
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+    </div>
 
-	<button id="p1goal" class="goal__one"></button>
+    <div class="row player-one">
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+      <div class="pit"><p>4</p></div>
+    </div>
+  </div>
+
+  <div class="player-one store"><p></p></div>
+  
 </div>
 
-
-
-
-
-
+<p class="status">It is player <span class="current-player">one</span>'s turn</p>
+ 
 </body>
 </html> 
