@@ -12,8 +12,39 @@
   </p> Enjoy the game! </p>
   <p role="image" aria-label="happy sun">🌞</p>
   
-  <style> 
+  <div class="board">
+		<div class="player-two store"><p></p></div>
+
+		<div class="rows">
+			<div class="row player-two">
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+			</div>
+
+			<div class="row player-one">
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+				<div class="pit"><p>4</p></div>
+			</div>
+		</div>
+
+		<div class="player-one store"><p></p></div>
+	</div>
+
+	<p class="status">It is player <span class="current-player">one</span>'s turn</p>
+
+  <button class="new-game">New Game</button>
   
+  
+  <style> 
+
 *, *::before, *::after {
 	box-sizing: inherit;
 }
@@ -137,317 +168,471 @@ button {
 		color: #23282d;
 	}
 }
+
   </style>
  
 <script>
-const playerOneRow = [
-  { name: "goalTwo", marbles: 0 },
-  { name: "spotZero", marbles: 4 },
-  { name: "spotOne", marbles: 4 },
-  { name: "spotTwo", marbles: 4 },
-  { name: "spotThree", marbles: 4 },
-  { name: "spotFour", marbles: 4 },
-  { name: "spotFive", marbles: 4 }
-];
- 
-const playerTwoRow = [
-  { name: "goalTwo", marbles: 0 },
-  { name: "spotZero", marbles: 4 },
-  { name: "spotOne", marbles: 4 },
-  { name: "spotTwo", marbles: 4 },
-  { name: "spotThree", marbles: 4 },
-  { name: "spotFour", marbles: 4 },
-  { name: "spotFive", marbles: 4 }
-];
- 
-// const playerOneRow = [
-//  { name: "goalTwo", marbles: 0 },
-//  { name: "spotZero", marbles: 5 },
-//  { name: "spotOne", marbles: 0 },
-//  { name: "spotTwo", marbles: 0 },
-//  { name: "spotThree", marbles: 0 },
-//  { name: "spotFour", marbles: 0 },
-//  { name: "spotFive", marbles: 0 }
-// ]; // ALL 0 TEST
- 
-var playerOne = true;
-var playerTwo = false;
- 
-turnSwitch = () => {
-  playerOne = !playerOne;
-  playerTwo = !playerTwo;
-}
-updateHeader = () => {
-  let player;
-  switch(playerOne) {
-  case true:
-    player = "Player 1";
-    break;
-  case false:
-    player = "Player 2";
-    break;
-  }
-  document.getElementById("header").innerHTML = `It is ${player}'s turn`
-}
-playerMove = (player, spot) => {
-  let playerCheck = player;
-  if((playerCheck === "p1" && playerOne) || (playerCheck === "p2" && playerTwo) ) {
-    if (playerOne) {
-      playerRow = playerOneRow;
-    } else {
-      playerRow = playerTwoRow;
-    }
-    if (playerRow[spot].marbles !== 0) {
-      s = 1;
-      sExtend = 0;
-      superExtend = 1;
-      ultraExtend = 0;
-      reflow = 0;
-      for (i = 0; i < playerRow[spot].marbles; i++) {
-        // setInterval(() => {
-        if (s <= 7 - (spot + 1)) {
-          playerRow[spot + s].marbles++;
-        } else if (s > 7 - (spot + 1) && s <= 7 - (spot + 1) + 7) {
-          if (playerOne) {
-            playerTwoRow[sExtend].marbles++;
-            sExtend++;
-          } else if (playerTwo) {
-            playerOneRow[sExtend].marbles++;
-            sExtend++;
-          }
-        } else if (s > 7 - (spot + 1) + 7 && s < 7 - (spot + 1) + 14) {
-          if (playerOne) {
-            playerOneRow[superExtend].marbles++;
-            superExtend++;
-            reflow = 1;
-          } else if (playerTwo) {
-            playerTwoRow[superExtend].marbles++;
-            superExtend++;
-            reflow = 1;
-          }
-        } else if (s > 7 - (spot + 1) + 14 && s <= 7 - (spot + 1) + 21) {
-          if (playerOne) {
-            playerTwoRow[ultraExtend].marbles++;
-            ultraExtend++;
-          } else if (playerTwo) {
-            playerOneRow[ultraExtend].marbles++;
-            ultraExtend++;
-          }
-        } else {
-          console.log("too many .(-.-).");
-        }
-        s++;
-    // }, );
-      }
-      playerRow[spot].marbles = reflow;
-      endCheck();
-      turnSwitch();
-      updateDisplay();
-    } else {
-      console.log("Pick a spot with marbles");
-    }
-  } else {
-    /*make players choose again*/
-    console.log("NOT YOUR TURN CHEATER!");
-  }
-};
- 
-updateDisplay = () => {
-  updateHeader();
-  document.getElementById("p2goal").innerHTML = playerOneRow[0].marbles;
-  document.getElementById("p1spot1").innerHTML = playerOneRow[1].marbles;
-  document.getElementById("p1spot2").innerHTML = playerOneRow[2].marbles;
-  document.getElementById("p1spot3").innerHTML = playerOneRow[3].marbles;
-  document.getElementById("p1spot4").innerHTML = playerOneRow[4].marbles;
-  document.getElementById("p1spot5").innerHTML = playerOneRow[5].marbles;
-  document.getElementById("p1spot6").innerHTML = playerOneRow[6].marbles;
-  document.getElementById("p1goal").innerHTML = playerTwoRow[0].marbles;
-  document.getElementById("p2spot1").innerHTML = playerTwoRow[1].marbles;
-  document.getElementById("p2spot2").innerHTML = playerTwoRow[2].marbles;
-  document.getElementById("p2spot3").innerHTML = playerTwoRow[3].marbles;
-  document.getElementById("p2spot4").innerHTML = playerTwoRow[4].marbles;
-  document.getElementById("p2spot5").innerHTML = playerTwoRow[5].marbles;
-  document.getElementById("p2spot6").innerHTML = playerTwoRow[6].marbles;
-};
- 
-endCheck = () => {
-  let one = playerOneRow;
-  let two = playerTwoRow;
-  let marbles1 = one.map(a => a.marbles).splice(1);
-  let marbles2 = two.map(a => a.marbles).splice(1);
-  let empty = [0, 0, 0, 0, 0, 0]
-  if (arrayCompare(marbles1, empty)) {
-    sweepRow(one, marbles2);
-    updateDisplay();
-  } else if (arrayCompare(marbles2, empty)) {
-    sweepRow(two, marbles1);
-    updateDisplay();
-  }
-}
- 
-arrayCompare = (array1, array2) => {
-  let arr1 = array1.join()
-  let arr2 = array2.join()
-  return(arr1 === arr2)
-  console.log(arr1, arr2)
-}
- 
-sweepRow = (playerRow, arrayToSweep) => {
-  if(playerRow == playerOneRow) {
-    playerOtherRow = playerTwoRow;
-  } else {
-    playerOtherRow = playerOneRow;
-  }
-  let total1 = arrayToSweep.reduce((total, num) => {return total+num})
-  let total2 = playerOtherRow[0].marbles
-  playerOtherRow.forEach(item => item.marbles = 0);
-  playerRow[0].marbles = total1;
-  playerOtherRow[0].marbles = total2;
-  updateDisplay();
-  gameEnd();
-}
- 
-gameEnd = () => {
-  let goalOne = playerTwoRow[0].marbles
-  let goalTwo = playerOneRow[0].marbles
-  if(goalOne > goalTwo) {
-    console.log("Player 1 wins!!!")
-  } else if(goalTwo > goalOne) {
-    console.log("Player 2 wins!!!")
-  } else {
-    console.log("IT'S A TIE!!!")
-  }
-}
- 
-getNewTotal = (total, num) => {
-  return total+num;
-}
- 
-updateDisplay();
-
-module.exports = function(grunt) {
+(function () {
     'use strict';
 
-    require('load-grunt-tasks')(grunt);
+    /**
+     * Update the stones on the page
+     */
+    Game.prototype.draw_all_stones = function () {
+        var format = function (stones) {
+            return stones === 0 ? '' : stones;
+        };
 
-    grunt.initConfig({
+        this.current_player_store.textContent = format(this.mancala.current_store);
+        this.other_player_store.textContent = format(this.mancala.other_store);
 
-        watch: {
+        for (var pit = 0; pit < 6; pit++) {
+            this.current_player_pits[pit].textContent = format(this.mancala.current_pits[pit]);
+            this.other_player_pits[pit].textContent = format(this.mancala.other_pits[pit]);
+        }
+    };
 
-            css: {
-                files: ['css/**/*.css'],
-                tasks: ['css']
-            },
+    /**
+     * Update the number of stones in a pit
+     * @param {Number} pit The pit number
+     */
+    Game.prototype.draw_stones = function (pit) {
+        var format = function (stones) {
+            return stones === 0 ? '' : stones;
+        };
 
-            js: {
-                files: ['js/**/*.js'],
-                tasks: ['js']
-            },
+        if (pit === 6) {
+            this.current_player_store.textContent = format(this.mancala.current_store);
+        } else if(pit === 13) {
+            this.other_player_store.textContent = format(this.mancala.other_store);
+        } else if (pit < 6) {
+            this.current_player_pits[pit].textContent = format(this.mancala.current_pits[pit]);
+        } else if (pit > 6) {
+            pit -= 7;
+            this.other_player_pits[pit].textContent = format(this.mancala.other_pits[pit]);
+        }
+    };
 
-            livereload: {
-                files: ['index.html', 'dist/app.css', 'dist/app.js'],
-                options: {
-                    livereload: true
-                }
+})();
+
+var Game = (function () {
+	'use strict';
+
+	/**
+	 * Initialise class
+	 * @param {Mancala} Mancala
+	 * @param {String} [current_player=one] The current player
+	 * @constructor
+	 */
+	var Game = function (Mancala, current_player) {
+		this.mancala = new Mancala(this);
+		this.player = current_player === 'two' ? 'two' : 'one';
+	};
+
+	/**
+	 * Refresh the query selectors and update pit stones
+	 */
+	Game.prototype.init = function () {
+		this.refresh_queries();
+		this.draw_all_stones();
+	};
+
+	/**
+	 * Retrieve the name of the player not currently having a turn
+	 * @return {String}
+	 */
+	Game.prototype.get_other_player = function () {
+		return this.player === 'one' ? 'two' : 'one';
+	};
+
+	/**
+	 * Run the query selectors for the pits
+	 */
+	Game.prototype.refresh_queries = function () {
+		this.current_player_pits = document.querySelectorAll('.row.player-' + this.player + ' .pit p');
+		this.other_player_pits = document.querySelectorAll('.row.player-' + this.get_other_player() + ' .pit p');
+		this.current_player_store = document.querySelector('.store.player-' + this.player + ' p');
+		this.other_player_store = document.querySelector('.store.player-' + this.get_other_player() + ' p');
+	};
+
+	/**
+	 * Perform the move for a player
+	 * @param {Number} pit - The pit number chosen
+	 * @returns {Boolean} true if the game is now over
+	 */
+	Game.prototype.do_player_turn = function (pit) {
+
+		// perform the player's action
+		var turn_over = this.mancala.move_stones(pit);
+
+		// make sure that a player hasn't run out of stones
+		if (this.check_game_over()) {
+			this.reset_game();
+			return true;
+		}
+
+		// change the player if the current turn is ended
+		if (turn_over) {
+			this.switch_turn();
+		}
+
+		this.save_game();
+		return false;
+	};
+
+	/**
+	 * Change the user currently having a turn
+	 */
+	Game.prototype.switch_turn = function () {
+		this.player = this.get_other_player();
+		this.mancala.flip_board();
+		this.refresh_queries();
+		this.draw_all_stones();
+
+		var player = this.player;
+		setTimeout(function () {
+			document.body.setAttribute('data-player', player);
+			document.querySelector('.current-player').textContent = player;
+		}, 700 );
+	};
+
+	/**
+	 * Check if the game should end
+	 * @returns {Boolean} Whether the game is over
+	 */
+	Game.prototype.check_game_over = function () {
+		var winner = this.mancala.check_winner();
+
+		if (winner < 0) {
+			return false;
+		}
+
+		document.body.classList.add('game-over');
+		var status = document.querySelector('.status');
+
+		// Determine which player holds the most stones
+		if (1 === winner) {
+			status.textContent = 'Player one wins!';
+		} else if (2 === winner) {
+			status.textContent = 'Player two wins!';
+		} else {
+			status.textContent = 'Draw!';
+		}
+
+		this.player = '';
+		return true;
+	};
+
+	return Game;
+})();
+
+(function () {
+    'use strict';
+
+    /**
+     * Load the game state from localStorage
+     */
+    Game.prototype.load_game = function () {
+
+        /* Remove old items */
+        if (localStorage.getItem('stones')) {
+            localStorage.removeItem('stones');
+            localStorage.removeItem('player');
+        }
+
+        if (localStorage.getItem('current_pits')) {
+            this.mancala.current_store = parseInt(localStorage.getItem('current_store'));
+            this.mancala.other_store = parseInt(localStorage.getItem('other_store'));
+
+            this.mancala.current_pits = JSON.parse(localStorage.getItem('current_pits'));
+            this.mancala.other_pits = JSON.parse(localStorage.getItem('other_pits'));
+
+            if ('two' === localStorage.getItem('player')) {
+                this.switch_turn();
             }
-        },
 
-        jshint: {
-            options: {
-                smarttabs: true,
-                eqeqeq: true,
-                newcap: true,
-                eqnull: true
-            },
-            gruntfile: {
-                options: {
-                    globals: {
-                        module: true
-                    }
-                },
-                files: {
-                    src: ['Gruntfile.js']
-                }
-            },
-            src: {
-                files: {
-                    src: ['js/**/*.js']
-                }
+        } else {
+            this.save_game();
+        }
+    };
+
+    /**
+     * Save the game state to localStorage
+     */
+    Game.prototype.save_game = function () {
+        localStorage.setItem('player', this.player);
+
+        localStorage.setItem('current_store', JSON.stringify(this.mancala.current_store));
+        localStorage.setItem('other_store', JSON.stringify(this.mancala.other_store));
+
+        localStorage.setItem('current_pits', JSON.stringify(this.mancala.current_pits));
+        localStorage.setItem('other_pits', JSON.stringify(this.mancala.other_pits));
+    };
+
+    /**
+     * Reset the game state in localStorage
+     */
+    Game.prototype.reset_game = function () {
+        localStorage.removeItem('player');
+        localStorage.removeItem('current_store');
+        localStorage.removeItem('other_store');
+        localStorage.removeItem('current_pits');
+        localStorage.removeItem('other_pits');
+    };
+
+})();
+
+(function () {
+    'use strict';
+
+    /**
+     * Check if a player has won
+     * @return {Number} -1 for no win, 0 for draw, 1 for player one win, 2 for player two win
+     */
+    Mancala.prototype.check_winner = function () {
+
+        /**
+         * Check if a row on the board is empty
+         * @param {Array} pits The pits to check
+         * @return {Boolean} true all of the pits contain no stones
+         */
+        var is_row_empty = function (pits) {
+            return pits.every(function (stones) {
+                return stones === 0;
+            });
+        };
+
+        var current_player_out = is_row_empty(this.current_pits);
+        var other_player_out = is_row_empty(this.other_pits);
+
+        // the game is not over if neither player has an empty row
+        if (! current_player_out && ! other_player_out) {
+            return -1;
+        }
+
+        // Move the stones remaining in a player's row into their store
+        var pit;
+
+        if (current_player_out && ! other_player_out) {
+            for (pit = 0; pit < 6; pit++) {
+                this.other_store += this.other_pits[pit];
+                this.other_pits[pit] = 0;
             }
-        },
 
-        postcss: {
-            options: {
-                map: true,
-                processors: [
-                    require('autoprefixer-core')(),
-                    require('precss')(),
-                    require('cssnano')()
-                ]
-            },
-            dist: {
-                src: 'css/app.css',
-                dest: 'dist/app.css'
-            }
-        },
-
-        uglify: {
-            dist: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'dist/app.js': [
-                        'js/mancala/mancala.js',
-                        'js/mancala/move-stones.js',
-                        'js/mancala/check-winner.js',
-
-                        'js/game/game.js',
-                        'js/game/draw-stones.js',
-                        'js/game/save-manager.js',
-
-                        'js/app.js'
-                    ]
-                }
+        } else if (other_player_out && ! current_player_out) {
+            for (pit = 0; pit < 6; pit++) {
+                this.current_store += this.current_pits[pit];
+                this.current_pits[pit] = 0;
             }
         }
-    });
 
-    grunt.registerTask( 'css', ['postcss'] );
-    grunt.registerTask( 'js', ['jshint', 'uglify'] );
-    grunt.registerTask( 'default', ['css', 'js'] );
-};
- 
+        this.game.draw_all_stones();
+
+        if (this.current_store > this.other_store) {
+            // current player wins
+            return this.game.player === 'two' ? 2 : 1;
+
+        } else if (this.other_store > this.current_store) {
+            // other player wins
+            return this.game.player === 'two' ? 1 : 2;
+
+        } else {
+            return 0;
+        }
+    };
+
+})();
+
+var Mancala = (function () {
+	'use strict';
+
+	/**
+	 * Initialise class
+	 * @param {Game} game
+	 */
+	var Mancala = function (game) {
+		this.game = game;
+
+		this.current_pits = [4, 4, 4, 4, 4, 4];
+		this.other_pits = [4, 4, 4, 4, 4, 4];
+		this.current_store = 0;
+		this.other_store = 0;
+	};
+
+	/**
+	 * Exchange the players' positions on the board
+	 */
+	Mancala.prototype.flip_board = function () {
+		var current_pits = this.current_pits;
+		this.current_pits = this.other_pits;
+		this.other_pits = current_pits;
+
+		var current_store = this.current_store;
+		this.current_store = this.other_store;
+		this.other_store = current_store;
+	};
+
+	/**
+	 * Retrieve the amount of stones in a pit
+	 * @param  {Number} pit The pit number
+	 * @return {Number}     The amount of stones
+	 */
+	Mancala.prototype.get_stones = function (pit) {
+
+		if (pit === 6) {
+			return this.current_store;
+		} else if (pit === 13) {
+			return this.other_store;
+		} else if (pit < 6) {
+			return this.current_pits[pit];
+		} else if (pit > 6) {
+			return this.other_pits[pit - 7];
+		}
+
+		return NaN;
+	};
+
+	/**
+	 * Set the amount of stones in a pit
+	 * @param {Number} pit    The pit number
+	 * @param {Number} stones The amount of stones
+	 */
+	Mancala.prototype.set_stones = function (pit, stones) {
+
+		if (pit === 6) {
+			this.current_store = stones;
+		} else if (pit === 13) {
+			this.other_store = stones;
+		} else if (pit < 6) {
+			this.current_pits[pit] = stones;
+		} else if (pit > 6) {
+			this.other_pits[pit - 7] = stones;
+		}
+	};
+
+	/**
+	 * Adjust the amount of stones in a pit
+	 * @param {Number} pit    The pit number
+	 * @param {Number} stones The amount of stones
+	 */
+	Mancala.prototype.add_stones = function (pit, stones) {
+
+		if (pit === 6) {
+			this.current_store += stones;
+		} else if (pit === 13) {
+			this.other_store[pit] += stones;
+		} else if (pit < 6) {
+			this.current_pits[pit] += stones;
+		} else if (pit > 6) {
+			this.other_pits[pit - 7] += stones;
+		}
+	};
+
+	return Mancala;
+})();
+
+(function () {
+    'use strict';
+
+    /**
+     * Distribute the stones from a pit around the board
+     * @param {Number} pit The pit to begin in
+     * @return {Boolean} Whether the user's turn has ended
+     */
+    Mancala.prototype.move_stones = function (pit) {
+
+        // return if pit has no stones
+        if (this.get_stones(pit) < 1) {
+            return false;
+        }
+
+        // take stones out of pit
+        var stones = this.get_stones(pit);
+        this.set_stones(pit, 0);
+        this.game.draw_stones(pit);
+
+        while (stones > 0) {
+            ++pit;
+
+            // wrap around the board before reaching other player's store
+            if (pit > 12) {
+                pit = 0;
+            }
+
+            this.add_stones(pit, 1);
+            stones--;
+            this.game.draw_stones(pit);
+        }
+
+        // Invert the pit number (number of opposite pit in opponent's row)
+        var inverse = 5 - pit;
+
+        // Check for capture
+        if (pit < 6 && this.current_pits[pit] === 1 && this.other_pits[inverse] > 0) {
+
+            // Transfer this pit's stones along with opposite pit's stones to store
+            this.current_store += this.other_pits[inverse] + 1;
+            this.game.draw_stones(6);
+
+            // Clear the pits
+            this.current_pits[pit] = 0;
+            this.other_pits[inverse] = 0;
+            this.game.draw_stones(pit);
+            this.game.draw_stones(12 - pit);
+        }
+
+        // the user's turn ended if the stones did not end in the storage pit
+        return pit !== 6;
+    };
+
+})();
+
+var game = (function () {
+	'use strict';
+
+	var game = new Game(Mancala);
+	game.load_game();
+
+	game.init();
+	var waiting_for_move = true;
+
+	/**
+	 * Initialize pit elements as
+	 * @param {String}   player The player who the row belongs to
+	 * @param {NodeList} row    The pit elements to initialize
+	 */
+	var init_pits = function (player, row) {
+		var onclick = function () {
+			if (game.player === player && waiting_for_move) {
+				waiting_for_move = false;
+				var pit = parseInt(this.getAttribute('data-pit'));
+				if (!game.do_player_turn(pit)) {
+					waiting_for_move = true;
+				}
+			}
+		};
+
+		for (var pit = 0; pit < row.length; pit++) {
+			row[pit].setAttribute('data-pit', pit);
+			row[pit].onclick = onclick;
+		}
+	};
+
+	init_pits('one', document.querySelectorAll('.row.player-one .pit'));
+	init_pits('two', document.querySelectorAll('.row.player-two .pit'));
+
+	document.querySelector('.new-game').onclick = function () {
+		game.reset_game();
+		window.location.reload();
+	};
+
+	return game;
+})();
+
 </script>
  
- <div class="board">
-  <div class="player-two store"><p></p></div>
-
-  <div class="rows">
-    <div class="row player-two">
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-    </div>
-
-    <div class="row player-one">
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-      <div class="pit"><p>4</p></div>
-    </div>
-  </div>
-
-  <div class="player-one store"><p></p></div>
-  
-</div>
-
-<p class="status">It is player <span class="current-player">one</span>'s turn</p>
+ 
+ 
  
 </body>
 </html> 
